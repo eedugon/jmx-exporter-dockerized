@@ -31,7 +31,7 @@ Publish latest stable docker container to Gitlab Registry:
     - docker:dind
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
-    - docker pull $CONTAINER_COMMIT_IMAGE
+    - docker pull $CONTAINER_COMMIT_IMAGE || true
     - docker tag $CONTAINER_COMMIT_IMAGE $CONTAINER_RELEASE_IMAGE
     - docker push $CONTAINER_RELEASE_IMAGE
   tags:
