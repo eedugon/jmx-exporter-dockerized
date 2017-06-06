@@ -1,0 +1,42 @@
+stages:
+- package
+
+variables:
+  DOCKER_DRIVER: overlay
+  CONTAINER_COMMIT_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+
+Build docker container and upload branch to Gitlab Registry:
+  stage: package
+  image: docker:git
+  services:
+    - docker:dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker pull $CONTAINER_COMMIT_IMAGE || true
+    - docker build --cache-from $CONTAINER_COMMIT_IMAGE -t "$CONTAINER_COMMIT_IMAGE" .
+    - docker push $CONTAINER_COMMIT_IMAGE
+    - docker rmi $CONTAINER_COMMIT_IMAGE
+  only:
+    - master
+    - develop
+    - tags
+  tags:
+    - dind
+
+Publish latest stable docker container to Gitlab Registry:
+  stage: package
+  image: docker:git
+  services:
+    - docker:dind
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker pull $CONTAINER_COMMIT_IMAGE
+    - docker tag $CONTAINER_COMMIT_IMAGE $CONTAINER_RELEASE_IMAGE
+    - docker push $CONTAINER_RELEASE_IMAGE
+  tags:
+    - dind
+  only:
+    - master
+    - tags
+
