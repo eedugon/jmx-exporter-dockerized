@@ -16,11 +16,11 @@
 # JMX_LOCAL_PORT
 
 # Default values.
-DEF_SERVICE_PORT=5556
+DEF_SERVICE_PORT=9088
 DEF_DEST_HOST="localhost"
-DEF_DEST_PORT="5555"
+DEF_DEST_PORT="8088"
 DEF_RULES_MODULE="default"
-DEF_JMX_LOCAL_PORT="5544"
+DEF_JMX_LOCAL_PORT="8087"
 
 # Config dir and file
 CONFIG_DIR="/opt/jmx_exporter/config"
@@ -69,7 +69,7 @@ if [ "$PREPARE_CONFIG" == "true" ]; then
   #  $PREPARE_CONFIG_SCRIPT > $CONFIG_FILE
   # config inline...
   echo "Preparing configuration based on environment variables"
-
+  test -f "$CONFIG_TEMPLATE" || { echo "ERROR: COnfiguration template not found: $CONFIG_TEMPLATE"; exit 1; }
   cat "$CONFIG_TEMPLATE" | sed -e "s/XXX_HOST_XXX/$DEST_HOST/" -e "s/XXX_PORT_XXX/$DEST_PORT/" > $CONFIG_FILE
 
   # Rules processing
@@ -93,4 +93,5 @@ fi
 test -f "$CONFIG_FILE" || { echo "ERROR: config file not found: $CONFIG_FILE"; exit 1; }
 
 # Service launch
+echo "Starting Service..."
 java $JVM_OPTS -jar $EXPORTER_JAR $SERVICE_PORT $CONFIG_FILE
