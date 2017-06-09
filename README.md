@@ -1,11 +1,17 @@
 # EEDUGON: TO BE UPDATED ALL THIS
 
 Supported environment variables to get different behavior
+
 SERVICE_PORT -- port to receive http /metrics requests
+
 DEST_HOST -- host to monitor via jmx
+
 DEST_PORT -- jmx port of destination host
+
 RULES_MODULE -- rules to apply
+
 JVM_LOCAL_OPTS -- options for local jvm
+
 JMX_LOCAL_PORT -- port for local jmxremote
 
 Supported modules: default, kafka-0-2-8
