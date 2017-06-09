@@ -48,7 +48,7 @@ test -z "$RULES_MODULE" && RULES_MODULE="$DEF_RULES_MODULE"
 test -z "$JMX_LOCAL_PORT" && JMX_LOCAL_PORT="$DEF_JMX_LOCAL_PORT"
 
 # Debug block...
-  echo "DEBUG: Environment variables set..."
+  echo "DEBUG: Environment variables set/received..."
   echo "Service port (metrics): $SERVICE_PORT"
   echo "Destination host: $DEST_HOST"
   echo "Destination port: $DEST_PORT"
@@ -101,4 +101,4 @@ test -f "$CONFIG_FILE" || { echo "ERROR: config file not found: $CONFIG_FILE"; e
 
 # Service launch
 echo "Starting Service..."
-# java $JVM_LOCAL_OPTS -jar $EXPORTER_JAR $SERVICE_PORT $CONFIG_FILE
+java $JVM_LOCAL_OPTS -jar $EXPORTER_JAR $SERVICE_PORT $CONFIG_FILE
