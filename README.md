@@ -1,6 +1,16 @@
 # EEDUGON: TO BE UPDATED ALL THIS
 
-# Docker JMX exporter for Prometheus
+Supported environment variables to get different behavior
+SERVICE_PORT -- port to receive http /metrics requests
+DEST_HOST -- host to monitor via jmx
+DEST_PORT -- jmx port of destination host
+RULES_MODULE -- rules to apply
+JVM_LOCAL_OPTS -- options for local jvm
+JMX_LOCAL_PORT -- port for local jmxremote
+
+Supported modules: default, kafka-0-2-8
+
+# (original content) Docker JMX exporter for Prometheus
 
 Essentially another dockerised JMX Exporter image, this uses alpine-java and dumb-init to provide a relatively small image (approx 130Mb) and includes a released version of jmx_exporter from the [maven central repository](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/)
 
