@@ -6,14 +6,15 @@
 #  Configuration file will be placed under /opt/jmx_exporter/config/config.yml
 #	- That could allow a system like kubernetes to mount the config directory directly from a configMap to override the config
 
-# Supported environment variables to get different configuration
-# SERVICE_PORT --> Defaults to
-# JVM_OPTS
-# DEST_HOST
-# DEST_PORT
-# SERVICE_PORT
-# RULES_MODULE
-# JMX_LOCAL_PORT
+# Supported environment variables to get different behavior
+# SERVICE_PORT -- port to receive http /metrics requests
+# DEST_HOST -- host to monitor via jmx
+# DEST_PORT -- jmx port of destination host
+# RULES_MODULE -- rules to apply
+# JVM_LOCAL_OPTS -- options for local jvm
+# JMX_LOCAL_PORT -- port for local jmxremote
+
+# Supported modules: default, kafka-0-2-8
 
 # Default values.
 DEF_SERVICE_PORT=9088
@@ -22,20 +23,22 @@ DEF_DEST_PORT="8088"
 DEF_RULES_MODULE="default"
 DEF_JMX_LOCAL_PORT="8087"
 
-# Config dir and file
+# Configuration related vars
 CONFIG_DIR="/opt/jmx_exporter/config"
 CONFIG_FILE="$CONFIG_DIR/config.yml"
-PREPARE_CONFIG_SCRIPT="/opt/jmx_exporter/prepare_config.sh"
+#PREPARE_CONFIG_SCRIPT="/opt/jmx_exporter/prepare_config.sh"
 CONFIG_TEMPLATE="$CONFIG_DIR/config.yml.template"
 RULES_DIR="/opt/jmx_exporter/rules"
+RULES_OFFICIAL_DIR="/opt/jmx_exporter/rules_official"
 
 # Main JAR
+test -z "$VERSION" && { echo "INTERNAL DOCKER ERROR: VERSION env variable not found. This variable should have been set properly during docker image creation"; exit 1; }
 EXPORTER_JAR="/opt/jmx_exporter/jmx_prometheus_httpserver-$VERSION-jar-with-dependencies.jar"
 
 # Basic verifications
 test -f "$EXPORTER_JAR" || { echo "INTERNAL DOCKER ERROR: jar file not found: $EXPORTER_JAR"; exit 1; }
-test -z "$VERSION" || { echo "INTERNAL DOCKER ERROR: VERSION env variable not found. This variable should have been set properly during docker image creation"; exit 1; }
 test -d "$RULES_DIR" || { echo "INTERNAL DOCKER ERROR: Rules dir not found: $RULES_DIR"; exit 1; }
+test -d "$RULES_OFFICIAL_DIR" || { echo "INTERNAL DOCKER ERROR: Rules official dir not found: $RULES_OFFICIAL_DIR"; exit 1; }
 
 # Environment variables verification and default values
 test -z "$SERVICE_PORT" && SERVICE_PORT="$DEF_SERVICE_PORT"
@@ -55,27 +58,31 @@ test -z "$JMX_LOCAL_PORT" && JMX_LOCAL_PORT="$DEF_JMX_LOCAL_PORT"
 
 # Note: we should find a way to disable jmx in the jmx-exporter itself (pending)
 #jvm opts processing (it requires JMX_LOCAL_PORT to be processed already)
-DEF_JVM_OPTS="-Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=$JMX_LOCAL_PORT"
-test -z "$JVM_OPTS" && JVM_OPTS="$DEF_JVM_OPTS"
+DEF_JVM_LOCAL_OPTS="-Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=$JMX_LOCAL_PORT"
+test -z "$JVM_LOCAL_OPTS" && JVM_LOCAL_OPTS="$DEF_JVM_LOCAL_OPTS"
 
 # PREPARE_CONFIG TRUE OR FALSE
-# If config.yml already exists then something overwrote the configuration. we don't need to prepare it based on environment variables
+# If config.yml already exists then we don't need to prepare anything
 test -f "$CONFIG_FILE" && { echo "CONFIG FILE found, creation not needed"; PREPARE_CONFIG="false"; } \
-    || { echo "CONFIG FILE not found. Trying to prepare it based on environment variables"; PREPARE_CONFIG="true"; }
+    || { echo "CONFIG FILE not found, enabling PREPARE_CONFIG feature"; PREPARE_CONFIG="true"; }
 
 # Configuration preparation
-if [ "$PREPARE_CONFIG" == "true" ]; then
+if [ "$PREPARE_CONFIG" = "true" ]; then
   # test -x "$PREPARE_CONFIG_SCRIPT" || { echo "ERROR, $PREPARE_CONFIG_SCRIPT not executable"; exit 1; }
   #  $PREPARE_CONFIG_SCRIPT > $CONFIG_FILE
   # config inline...
   echo "Preparing configuration based on environment variables"
-  test -f "$CONFIG_TEMPLATE" || { echo "ERROR: COnfiguration template not found: $CONFIG_TEMPLATE"; exit 1; }
+  test -f "$CONFIG_TEMPLATE" || { echo "ERROR: Configuration template not found: $CONFIG_TEMPLATE"; exit 1; }
   cat "$CONFIG_TEMPLATE" | sed -e "s/XXX_HOST_XXX/$DEST_HOST/" -e "s/XXX_PORT_XXX/$DEST_PORT/" > $CONFIG_FILE
 
   # Rules processing
   RULES_FILE="${RULES_DIR}/${RULES_MODULE}.yml"
-  test -f "$RULES_FILE" || { echo "ERROR: Expected rules file $RULES_FILE not found";
-      echo "Available modules:"; ls $RULES_DIR/; exit 1; }
+  if ! test -f "$RULES_FILE"; then
+    # we support finding the module in the official downloaded modules dir.
+    test -f "${RULES_OFFICIAL_DIR}/${RULES_MODULE}.yml" && RULES_FILE="${RULES_OFFICIAL_DIR}/${RULES_MODULE}.yml" \
+      || {  echo "ERROR: Expected rules file $RULES_MODULE not found in any rules directory";
+      echo "Available modules:"; ls $RULES_DIR; ls $RULES_OFFICIAL_DIR; rm $CONFIG_FILE; echo; exit 1; }
+  fi
   cat "$RULES_FILE" >> $CONFIG_FILE
 
   echo "Configuration preparation completed, final cofiguration dump:"
@@ -94,4 +101,4 @@ test -f "$CONFIG_FILE" || { echo "ERROR: config file not found: $CONFIG_FILE"; e
 
 # Service launch
 echo "Starting Service..."
-java $JVM_OPTS -jar $EXPORTER_JAR $SERVICE_PORT $CONFIG_FILE
+# java $JVM_LOCAL_OPTS -jar $EXPORTER_JAR $SERVICE_PORT $CONFIG_FILE

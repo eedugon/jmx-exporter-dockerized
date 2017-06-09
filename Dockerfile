@@ -10,13 +10,17 @@ RUN curl --insecure -L https://github.com/Yelp/dumb-init/releases/download/v1.2.
 
 RUN mkdir -p /opt/jmx_exporter/config
 RUN mkdir -p /opt/jmx_exporter/rules
+RUN mkdir -p /opt/jmx_exporter/rules_official
 
 RUN curl -L https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/$VERSION/$JAR -o /opt/jmx_exporter/$JAR
 
-COPY prepare_config.sh /opt/jmx_exporter/
+# Download rules from official jmx_exporter repository into rules_official
+# RUN curl -L https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/$VERSION/$JAR -o /opt/jmx_exporter/$JAR
+
+# COPY prepare_config.sh /opt/jmx_exporter/
+# RUN chmod +x /opt/jmx_exporter/prepare_config.sh
 COPY config.yml.template /opt/jmx_exporter/config/
 COPY rules /opt/jmx_exporter/rules
 COPY start.sh /opt/jmx_exporter/
-RUN chmod +x /opt/jmx_exporter/prepare_config.sh
 
 CMD ["usr/local/bin/dumb-init", "/opt/jmx_exporter/start.sh"]
