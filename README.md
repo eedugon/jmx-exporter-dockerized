@@ -1,24 +1,34 @@
 # EEDUGON: TO BE UPDATED ALL THIS
 
-Supported environment variables to get different behavior
+This project consists of a dockerised JMX Exporter image, based on the original image created by sscaling (sscaling/jmx_exporter), using alpine-java, dumb-init and fetching the official released version of jmx_exporter from the [maven central repository](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/)
 
-SERVICE_PORT -- port to receive http /metrics requests
+This image includes the following extra features:
 
-DEST_HOST -- host to monitor via jmx
+  * Automatic Configuration: config.xml creation based on environment variables
+  * Static Configuration: if config.xml is mapped into /opt/jmx_exporter/config/, then environment variables won't be considered, and the provided configuration used.
+  * Flexible rules: via environment variable we can select the rules to apply to the configuration (only if Automatic Configuration feature is used)
 
-DEST_PORT -- jmx port of destination host
+Environment variables supported to get different behavior
 
-RULES_MODULE -- rules to apply
+  * SERVICE_PORT -- port to receive http /metrics requests
+  * DEST_HOST -- host to monitor via jmx
+	* DEST_PORT -- jmx port of destination host
+	* RULES_MODULE -- rules to apply
+	* JVM_LOCAL_OPTS -- options for local jvm
+	* JMX_LOCAL_PORT -- port for local jmxremote
 
-JVM_LOCAL_OPTS -- options for local jvm
+Supported modules in current version (only one can be selected):
+  * default
+	* kafka-0-2-8
 
-JMX_LOCAL_PORT -- port for local jmxremote
+## Default Settings
 
-Supported modules: default, kafka-0-2-8
+If no environment variables or volumes are provided to the image, the exporter will have the following behavior:
 
-# (original content) Docker JMX exporter for Prometheus
-
-Essentially another dockerised JMX Exporter image, this uses alpine-java and dumb-init to provide a relatively small image (approx 130Mb) and includes a released version of jmx_exporter from the [maven central repository](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/)
+  * HTTP listening port: 9088
+  * Remote JVM to connect to: localhost:8088
+	* Rules to apply: default (which means a simple pattern: ".\*" )
+	* Local jmxremote port: 8087 (in case someone wants to check this JVM)
 
 ## Building docker image
 
