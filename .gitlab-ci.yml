@@ -1,5 +1,6 @@
 stages:
 - package
+- push
 
 variables:
   DOCKER_DRIVER: overlay
@@ -25,10 +26,12 @@ Build docker container and upload branch to Gitlab Registry:
     - dind
 
 Publish latest stable docker container to Gitlab Registry:
-  stage: package
+  stage: push
   image: docker:git
   services:
     - docker:dind
+  dependencies:
+    - package
   script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
     - docker pull $CONTAINER_COMMIT_IMAGE || true
@@ -41,10 +44,12 @@ Publish latest stable docker container to Gitlab Registry:
     - tags
 
 Deploy to AWS ECR:
-  stage: package
+  stage: push
   image: docker:git
   services:
     - docker:dind
+  dependencies:
+    - package
   script:
     - apk -Uuv add groff less python py-pip
     - pip install awscli
