@@ -45,8 +45,6 @@ Deploy to AWS ECR:
   image: docker:git
   services:
     - docker:dind
-  dependencies:
-    - test
   script:
     - apk -Uuv add groff less python py-pip
     - pip install awscli
