@@ -17,11 +17,11 @@
 # Supported modules: default, kafka-0-2-8
 
 # Default values.
-DEF_SERVICE_PORT=9088
+DEF_SERVICE_PORT="9072"
 DEF_DEST_HOST="localhost"
-DEF_DEST_PORT="8088"
+DEF_DEST_PORT="7072"
 DEF_RULES_MODULE="default"
-DEF_JMX_LOCAL_PORT="8087"
+DEF_JMX_LOCAL_PORT="7071"
 
 # Configuration related vars
 CONFIG_DIR="/opt/jmx_exporter/config"
