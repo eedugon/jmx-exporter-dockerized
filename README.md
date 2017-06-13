@@ -25,10 +25,10 @@ Supported modules in current version (only one can be selected):
 
 If no environment variables or volumes are provided to the image, the exporter will have the following behavior:
 
-  * HTTP listening port: 9088
-  * Remote JVM to connect to: localhost:8088
+  * HTTP listening port: 9072
+  * Remote JVM to connect to: localhost: 7072
 	* Rules to apply: default (which means a simple pattern: ".\*" )
-	* Local jmxremote port: 8087 (in case someone wants to check this JVM)
+	* Local jmxremote port: 7071 (in case someone wants to check this JVM)
 
 ## Building docker image
 
