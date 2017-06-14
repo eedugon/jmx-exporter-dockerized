@@ -32,19 +32,26 @@ If no environment variables or volumes are provided to the image, the exporter w
 
 ## Building docker image
 
-	docker build -t sscaling/jmx-exporter .
+	docker build -t eedugon/jmx-exporter .
 
 ## Running
 
-	docker run --rm -p "5556:5556" sscaling/jmx-exporter
+	docker run --rm -p "9072:9072" eedugon/jmx-exporter
 
-Then you can visit the metrics endpoint: [http://127.0.0.1:5556/metrics]() (assuming docker is running on localhost)
+Then you can visit the metrics endpoint: [http://127.0.0.1:9072/metrics]() (assuming docker is running on localhost)
 
-## Configuration
+Note: If you want to test jmx_exporter monitoring it's own metrics, you could set DEST_PORT to 7071, which is the jmx port of the jmx_exporter itself.
 
-By default, the jmx-exporter is configure to monitor it's own metrics (as per the main repo example). However, to provide your own configuration, mount the YAML file as a volume
+  docker run --rm -e "DEST_PORT=7071" -p "9072:9072" eedugon/jmx-exporter
 
-	docker run --rm -p "5556:5556" -v "$PWD/config.yml:/opt/jmx_exporter/config.yml" sscaling/jmx-exporter
+
+## Configuration modes: Auto generation of config.xml vs static configuration
+
+This docker allows 2 configuration modes, automatic generation of config.xml (default) or providing a static configuration file via volume mount.
+
+Example of setting our own config:
+
+	docker run --rm -p "9072:9072" -v "$PWD/config.yml:/opt/jmx_exporter/config/config.yml" eedugon/jmx-exporter
 
 The configuration options are documented: [https://github.com/prometheus/jmx_exporter](https://github.com/prometheus/jmx_exporter)
 
@@ -52,8 +59,12 @@ The configuration options are documented: [https://github.com/prometheus/jmx_exp
 
 Additionally, the following environment variables can be defined
 
-* SERVICE_PORT - what port to run the service (if you don't like 5556)
-* JVM_OPTS - any additional options, Xmx etc.
+* SERVICE_PORT -- port to receive http /metrics requests
+* DEST_HOST -- host to monitor via jmx
+* DEST_PORT -- jmx port of destination host
+* RULES_MODULE -- rules to apply
+* JVM_LOCAL_OPTS -- options for local jvm
+* JMX_LOCAL_PORT -- port for local jmxremote
 
 ## Using with Prometheus
 
