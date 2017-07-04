@@ -22,6 +22,13 @@ DEF_DEST_HOST="localhost"
 DEF_DEST_PORT="7072"
 DEF_RULES_MODULE="default"
 DEF_JMX_LOCAL_PORT="7071"
+DEF_CHECK_INIT="true"
+DEF_CHECK_INIT_MAX_DELAY="300"
+DEF_CHECK_INIT_INTERVAL="5"
+DEF_CHECK_INIT_ACTION="continue" # set it to continue to not exit in case of check init fails
+
+# check_jmx executable file
+CHECK_JMX="/opt/jmx_exporter/check_jmx/check_jmx"
 
 # Configuration related vars
 CONFIG_DIR="/opt/jmx_exporter/config"
@@ -46,6 +53,12 @@ test -z "$DEST_HOST" && DEST_HOST="$DEF_DEST_HOST"
 test -z "$DEST_PORT" && DEST_PORT="$DEF_DEST_PORT"
 test -z "$RULES_MODULE" && RULES_MODULE="$DEF_RULES_MODULE"
 test -z "$JMX_LOCAL_PORT" && JMX_LOCAL_PORT="$DEF_JMX_LOCAL_PORT"
+test -z "$CHECK_INIT" && CHECK_INIT="$DEF_CHECK_INIT"
+test -z "$CHECK_INIT_MAX_DELAY" && CHECK_INIT_MAX_DELAY="$DEF_CHECK_INIT_MAX_DELAY"
+test -z "$CHECK_INIT_INTERVAL" && CHECK_INIT_INTERVAL="$DEF_CHECK_INIT_INTERVAL"
+test -z "$CHECK_INIT_ACTION" && CHECK_INIT_ACTION="$DEF_CHECK_INIT_ACTION"
+
+CHECK_INIT_ITERATIONS=$(expr $CHECK_INIT_MAX_DELAY / $CHECK_INIT_INTERVAL)
 
 # Debug block...
   echo "DEBUG: Environment variables set/received..."
@@ -99,6 +112,35 @@ fi
 # Redundant check, but just in case :)
 test -f "$CONFIG_FILE" || { echo "ERROR: config file not found: $CONFIG_FILE"; exit 1; }
 
+if [ "$CHECK_INIT" = "true" ]; then
+    # CHECK_INIT validations
+    test -x "$CHECK_JMX" || { echo "CHECK_INIT: $CHECK_JMX not found or not executable"; exit 1; }
+    # check that interval and max_delay are integers
+
+    # Check status of remote endpoint before starting
+    #   ./check_jmx -U service:jmx:rmi:///jndi/rmi://localhost:7072/jmxrmi -O java.lang:type=Memory -A HeapMemoryUsage -K used -I HeapMemoryUsage -J used -vvvv -w 4248302272 -c 5498760192
+    echo "CHECK_INIT: module enabled"
+    echo "CHECK_INIT: interval check: $CHECK_INIT_INTERVAL"
+    echo "CHECK_INIT: iterations: $CHECK_INIT_ITERATIONS"
+
+    n=0
+    until OUT="$($CHECK_JMX -U service:jmx:rmi:///jndi/rmi://$DEST_HOST:$DEST_PORT/jmxrmi -O java.lang:type=Memory -A HeapMemoryUsage -K used -I HeapMemoryUsage -J used -vvvv -w 4248302272 -c 5498760192)"; do
+      #statements
+      echo "CHECK_INIT: Check_jmx returned error $?"
+      echo "CHECK_INIT: Response from check_jmx:"
+      echo "$OUT"
+      echo
+      echo "CHECK_INIT: To disable CHECK_INIT feature set environment variable CHECK_INIT to false"
+      echo "CHECK_INIT: will try again in $CHECK_INIT_INTERVAL seconds..."
+      sleep $CHECK_INIT_INTERVAL
+      ((n++))
+      if test "$n" -ge "$CHECK_INIT_ITERATIONS"; then
+        echo "CHECK_INIT: Number of retries exceeded ($n). Configured action is $CHECK_INIT_ACTION"
+        test "$CHECK_INIT_ACTION" = "exit" && { echo "CHECK_INIT: exiting"; exit 1; } \
+          || { echo "CHECK_INIT: giving up. Continuing with start procedure anyway"; break; }
+      fi
+    done
+fi
 # Service launch
 echo "Starting Service..."
 java $JVM_LOCAL_OPTS -jar $EXPORTER_JAR $SERVICE_PORT $CONFIG_FILE

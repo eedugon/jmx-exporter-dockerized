@@ -78,3 +78,6 @@ Minimal example config:
 	   static_configs:
 	    - targets:
 	      - 127.0.0.1:5556
+
+#### Notes...
+#CHECK_INIT_PLUGIN_URL="https://helm.ivi.ericsson.net/monitoring/jmx_exporter/resources/check_jmx.tgz"

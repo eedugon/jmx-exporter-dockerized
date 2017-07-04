@@ -1,0 +1,9 @@
+-------- JMX plugin for Munin/Nagios Changelog ---------
+
+21 Nov, 2006, ver 0.1 - initial version
+
+04 Dec, 2006, ver.0.2 - added plugin for Nagios
+
+18 Mar, 2009, ver.0.3 - Updated to handle values larger than an Integer could handle, changed to Long.
+			Fixed NumberFormatException for warning/critical values larger than 2^31-1(2147483647 bytes)
+			Adam Serediuk <serediuk@gmail.com>

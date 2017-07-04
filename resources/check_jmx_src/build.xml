@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  		JMX Query tool build script.
+-->
+
+<project name="JMX Query tool" default="all" basedir=".">
+	
+	<property name="BASE"   location="."/>
+	<property name="src"	location="${BASE}/src"/>
+	<property name="out"	location="${BASE}/classes"/>
+	<property name="dist"	location="${BASE}/dist"/>
+
+	<path id="buildpath">
+	</path>
+	
+	<target name="all" depends="jar">
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar destfile="munin/plugin/jmxquery.jar" basedir="${out}"/>
+		<jar destfile="nagios/plugin/jmxquery.jar" basedir="${out}"/>
+	</target>
+	
+	<target name="compile">
+		<antcall target="compile.source.folder">
+			<param name="src" value="${src}"/>
+		</antcall>
+	</target>
+	
+	<target name="compile.source.folder">
+		<mkdir dir="${out}"/>
+		<javac destdir="${out}" debug="on">
+			   <classpath refid="buildpath"/>
+			   <src path="${src}"/> 
+		</javac>		
+		<copy todir="${out}">	
+			<fileset dir="${src}">
+    			<exclude name="**/*.java"/>
+			</fileset>
+		</copy>				
+	</target>	
+	
+</project>
