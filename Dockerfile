@@ -9,6 +9,7 @@ ENV JAR jmx_prometheus_httpserver-$VERSION-jar-with-dependencies.jar
 RUN curl --insecure -L https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 -o usr/local/bin/dumb-init && chmod +x /usr/local/bin/dumb-init
 
 RUN mkdir -p /opt/jmx_exporter/config
+RUN mkdir -p /opt/jmx_exporter/check_jmx
 RUN mkdir -p /opt/jmx_exporter/rules
 RUN mkdir -p /opt/jmx_exporter/rules_official
 
@@ -22,5 +23,6 @@ RUN curl -L https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_http
 COPY config.yml.template /opt/jmx_exporter/config/
 COPY rules /opt/jmx_exporter/rules
 COPY start.sh /opt/jmx_exporter/
+COPY resources/check_jmx /opt/jmx_exporter/check_jmx
 
 CMD ["usr/local/bin/dumb-init", "/opt/jmx_exporter/start.sh"]
