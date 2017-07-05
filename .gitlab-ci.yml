@@ -43,7 +43,7 @@ Publish latest stable docker container to Gitlab Registry:
 
 Deploy to AWS ECR:
   stage: push
-  image: docker:git
+  image: docker:17.04-git
   services:
     - docker:dind
   script:
