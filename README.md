@@ -1,4 +1,4 @@
-# EEDUGON: TO BE UPDATED ALL THIS
+# JMX_EXPORTER with extra features
 
 This project consists of a dockerised JMX Exporter image, based on the original image created by sscaling (sscaling/jmx_exporter), using alpine-java, dumb-init and fetching the official released version of jmx_exporter from the [maven central repository](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/)
 
@@ -7,6 +7,7 @@ This image includes the following extra features:
   * Automatic Configuration: config.xml creation based on environment variables
   * Static Configuration: if config.xml is mapped into /opt/jmx_exporter/config/, then environment variables won't be considered, and the provided configuration used.
   * Flexible rules: via environment variable we can select the rules to apply to the configuration (only if Automatic Configuration feature is used)
+  * check_init
 
 Environment variables supported to get different behavior
 
@@ -16,6 +17,10 @@ Environment variables supported to get different behavior
 	* RULES_MODULE -- rules to apply
 	* JVM_LOCAL_OPTS -- options for local jvm
 	* JMX_LOCAL_PORT -- port for local jmxremote
+  * CHECK_INIT -- (true | false) - enable/disable check_init feature
+  * CHECK_INIT_ACTION -- (exit | continue) -- What to do in case of failing checks
+  * CHECK_INIT_MAX_DELAY --  Maximum time to spend checking remote JVM
+  * CHECK_INIT_INTERVAL -- interval between attempts
 
 Supported modules in current version (only one can be selected):
   * default
@@ -29,6 +34,7 @@ If no environment variables or volumes are provided to the image, the exporter w
   * Remote JVM to connect to: localhost: 7072
 	* Rules to apply: default (which means a simple pattern: ".\*" )
 	* Local jmxremote port: 7071 (in case someone wants to check this JVM)
+  * CHECK_INIT module will be enabled by default.
 
 ## Building docker image
 

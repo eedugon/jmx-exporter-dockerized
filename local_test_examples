@@ -1,0 +1,8 @@
+docker build -t jmx_exporter:check_init .
+docker run --rm jmx_exporter:check_init 
+docker build -t jmx_exporter:delay .
+docker run --rm -e "CHECK_INIT=false" jmx_exporter:delay 
+docker run --rm -e "CHECK_INIT=false" jmx_exporter:check_init 
+docker run --rm -e "CHECK_INIT_MAX_DELAY=15" jmx_exporter:check_init 
+docker run --rm -e "CHECK_INIT_MAX_DELAY=15" -e "CHECK_INIT_ACTION=exit" jmx_exporter:check_init 
+docker run --rm -e "CHECK_INIT=false" jmx_exporter:check_init 

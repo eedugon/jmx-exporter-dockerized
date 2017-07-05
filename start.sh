@@ -13,6 +13,7 @@
 # RULES_MODULE -- rules to apply
 # JVM_LOCAL_OPTS -- options for local jvm
 # JMX_LOCAL_PORT -- port for local jmxremote
+# CHECK_INIT* -- variables for CHECK_INIT feature (check remote jmx port before starting jmx_exporter)
 
 # Supported modules: default, kafka-0-2-8
 
@@ -122,23 +123,26 @@ if [ "$CHECK_INIT" = "true" ]; then
     echo "CHECK_INIT: module enabled"
     echo "CHECK_INIT: interval check: $CHECK_INIT_INTERVAL"
     echo "CHECK_INIT: iterations: $CHECK_INIT_ITERATIONS"
+    echo "CHECK_INIT: action: $CHECK_INIT_ACTION"
 
     n=0
-    until OUT="$($CHECK_JMX -U service:jmx:rmi:///jndi/rmi://$DEST_HOST:$DEST_PORT/jmxrmi -O java.lang:type=Memory -A HeapMemoryUsage -K used -I HeapMemoryUsage -J used -vvvv -w 4248302272 -c 5498760192)"; do
+    until OUT="$($CHECK_JMX -U service:jmx:rmi:///jndi/rmi://$DEST_HOST:$DEST_PORT/jmxrmi -O java.lang:type=Memory -A HeapMemoryUsage -K used -I HeapMemoryUsage -J used -vvvv -w 42483022720 -c 54987601920)"; do
       #statements
       echo "CHECK_INIT: Check_jmx returned error $?"
       echo "CHECK_INIT: Response from check_jmx:"
       echo "$OUT"
       echo
-      echo "CHECK_INIT: To disable CHECK_INIT feature set environment variable CHECK_INIT to false"
-      echo "CHECK_INIT: will try again in $CHECK_INIT_INTERVAL seconds..."
-      sleep $CHECK_INIT_INTERVAL
-      ((n++))
+      n="$(expr $n + 1)"
+#      ((n++))
       if test "$n" -ge "$CHECK_INIT_ITERATIONS"; then
         echo "CHECK_INIT: Number of retries exceeded ($n). Configured action is $CHECK_INIT_ACTION"
         test "$CHECK_INIT_ACTION" = "exit" && { echo "CHECK_INIT: exiting"; exit 1; } \
           || { echo "CHECK_INIT: giving up. Continuing with start procedure anyway"; break; }
       fi
+      echo "CHECK_INIT: Attempt $n completed"
+      echo "CHECK_INIT: To disable CHECK_INIT feature set environment variable CHECK_INIT to false"
+      echo "CHECK_INIT: will try again in $CHECK_INIT_INTERVAL seconds..."
+      sleep $CHECK_INIT_INTERVAL
     done
 fi
 # Service launch
