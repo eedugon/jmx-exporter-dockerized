@@ -25,7 +25,7 @@ DEF_RULES_MODULE="default"
 DEF_JMX_LOCAL_PORT="7071"
 DEF_CHECK_INIT="true"
 DEF_CHECK_INIT_MAX_DELAY="300"
-DEF_CHECK_INIT_INTERVAL="5"
+DEF_CHECK_INIT_INTERVAL="10"
 DEF_CHECK_INIT_ACTION="continue" # set it to continue to not exit in case of check init fails
 
 # check_jmx executable file
