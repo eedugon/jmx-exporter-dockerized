@@ -13,10 +13,10 @@ Environment variables supported to get different behavior/configuration
 
   * SERVICE_PORT -- port to receive http /metrics requests
   * DEST_HOST -- host to monitor via jmx
-	* DEST_PORT -- jmx port of destination host
-	* RULES_MODULE -- rules to apply
-	* JVM_LOCAL_OPTS -- options for local jvm
-	* JMX_LOCAL_PORT -- port for local jmxremote
+  * DEST_PORT -- jmx port of destination host
+  * RULES_MODULE -- rules to apply
+  * JVM_LOCAL_OPTS -- options for local jvm
+  * JMX_LOCAL_PORT -- port for local jmxremote
   * CHECK_INIT -- (true | false) - enable/disable check_init feature
   * CHECK_INIT_ACTION -- (exit | continue) -- What to do in case of failing checks
   * CHECK_INIT_MAX_DELAY --  Maximum time to spend checking remote JVM
