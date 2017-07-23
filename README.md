@@ -4,12 +4,12 @@ This project consists of a dockerised JMX Exporter image, based on the original 
 
 This image includes the following extra features:
 
-  * Automatic Configuration: config.xml creation based on environment variables
+  * Automatic Configuration: config.xml creation based on environment variables and templates
   * Static Configuration: if config.xml is mapped into /opt/jmx_exporter/config/, then environment variables won't be considered, and the provided configuration used.
-  * Flexible rules: via environment variable we can select the rules to apply to the configuration (only if Automatic Configuration feature is used)
-  * check_init
+  * Flexible rules: via environment variable we can select the rules to apply to the configuration (only if Automatic Configuration feature is used and only 1 rules file allowed)
+  * check_init : With check init enabled (by default is disabled), jmx_exporter will wait until the remote jmx port is available (this feature uses nagios check_jmx plugin)
 
-Environment variables supported to get different behavior
+Environment variables supported to get different behavior/configuration
 
   * SERVICE_PORT -- port to receive http /metrics requests
   * DEST_HOST -- host to monitor via jmx
@@ -23,18 +23,18 @@ Environment variables supported to get different behavior
   * CHECK_INIT_INTERVAL -- interval between attempts
 
 Supported modules in current version (only one can be selected):
-  * default
-	* kafka-0-2-8
+  * default (this will translate all mbeans to metrics)
+  * kafka-0-2-8
 
 ## Default Settings
 
-If no environment variables or volumes are provided to the image, the exporter will have the following behavior:
+If no environment variables or volumes are provided to the image, the exporter will have the following default behavior:
 
   * HTTP listening port: 9072
   * Remote JVM to connect to: localhost: 7072
 	* Rules to apply: default (which means a simple pattern: ".\*" )
 	* Local jmxremote port: 7071 (in case someone wants to check this JVM)
-  * CHECK_INIT module will be enabled by default.
+  * CHECK_INIT module will be disabled by default.
 
 ## Building docker image
 
@@ -72,18 +72,8 @@ Additionally, the following environment variables can be defined
 * JVM_LOCAL_OPTS -- options for local jvm
 * JMX_LOCAL_PORT -- port for local jmxremote
 
-## Using with Prometheus
+## CHECK_INIT considerations
 
-Minimal example config:
-
-	global:
-	 scrape_interval: 10s
-	 evaluation_interval: 10s
-	scrape_configs:
-	 - job_name: 'jmx'
-	   static_configs:
-	    - targets:
-	      - 127.0.0.1:5556
-
-#### Notes...
-#CHECK_INIT_PLUGIN_URL="https://helm.ivi.ericsson.net/monitoring/jmx_exporter/resources/check_jmx.tgz"
+I still need to check if we can use nagios check_jmx plugin inside this project. Anyway, it can be removed from the code easily:
+  * Remove from start.sh the block of CHECK_INIT feature plus all CHEC_INIT variables definition
+  * Remove from Dockerfile the copy of resources/check_jmx to the docker.

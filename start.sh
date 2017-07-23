@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# Udated by eedugon from ...
+# Todo:
+# Add message when check_init is successfull.
 
 # Design statements
 #  Configuration file will be placed under /opt/jmx_exporter/config/config.yml
@@ -23,7 +24,7 @@ DEF_DEST_HOST="localhost"
 DEF_DEST_PORT="7072"
 DEF_RULES_MODULE="default"
 DEF_JMX_LOCAL_PORT="7071"
-DEF_CHECK_INIT="true"
+DEF_CHECK_INIT="false"
 DEF_CHECK_INIT_MAX_DELAY="300"
 DEF_CHECK_INIT_INTERVAL="10"
 DEF_CHECK_INIT_ACTION="continue" # set it to continue to not exit in case of check init fails
@@ -113,6 +114,7 @@ fi
 # Redundant check, but just in case :)
 test -f "$CONFIG_FILE" || { echo "ERROR: config file not found: $CONFIG_FILE"; exit 1; }
 
+# Double check that we can use nagios check_jmx tool within this project
 if [ "$CHECK_INIT" = "true" ]; then
     # CHECK_INIT validations
     test -x "$CHECK_JMX" || { echo "CHECK_INIT: $CHECK_JMX not found or not executable"; exit 1; }
@@ -126,7 +128,7 @@ if [ "$CHECK_INIT" = "true" ]; then
     echo "CHECK_INIT: action: $CHECK_INIT_ACTION"
 
     n=0
-    until OUT="$($CHECK_JMX -U service:jmx:rmi:///jndi/rmi://$DEST_HOST:$DEST_PORT/jmxrmi -O java.lang:type=Memory -A HeapMemoryUsage -K used -I HeapMemoryUsage -J used -vvvv -w 42483022720 -c 54987601920)"; do
+    until OUT="$($CHECK_JMX -U service:jmx:rmi:///jndi/rmi://$DEST_HOST:$DEST_PORT/jmxrmi -O java.lang:type=Memory -A HeapMemoryUsage -K used -I HeapMemoryUsage -J used -vvvv -w 42483022720 -c 54987601920 && echo "CHECK_INIT: Check SUCCESS")"; do
       #statements
       echo "CHECK_INIT: Check_jmx returned error $?"
       echo "CHECK_INIT: Response from check_jmx:"
