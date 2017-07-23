@@ -7,22 +7,22 @@ The version of the official prometheus jmx-exporter currently built and supporte
 This version of the docker includes the following extra features:
 
   * Automatic Configuration: config.xml creation based on environment variables and templates.
-  * Static Configuration: if config.xml is mapped into /opt/jmx_exporter/config/, then environment variables won't be considered, and the provided configuration used.
-  * Flexible rules: via environment variable we can select the rules to apply to the configuration (only if Automatic Configuration feature is used and only 1 rules file allowed).
-  * check_init : With check init enabled (by default is disabled), jmx_exporter will wait until the remote jmx port is available (this feature uses nagios check_jmx plugin).
+  * Static Configuration: if config.xml is mapped into /opt/jmx_exporter/config/, then environment variables won't be considered, and the provided configuration will be used.
+  * Flexible rules: via environment variables we can select the rules to apply to the configuration (only if Automatic Configuration feature is used and only 1 rules file allowed).
+  * check_init : With check init enabled (by default is disabled), jmx_exporter will wait until the remote jmx port is available (this feature uses nagios check_jmx plugin) before starting the exporter itself.
 
 Environment variables supported to get different behavior/configuration:
 
-  * SERVICE_PORT -- port to receive http /metrics requests
-  * DEST_HOST -- host to monitor via jmx
-  * DEST_PORT -- jmx port of destination host
-  * RULES_MODULE -- rules to apply
-  * JVM_LOCAL_OPTS -- options for local jvm
-  * JMX_LOCAL_PORT -- port for local jmxremote
-  * CHECK_INIT -- (true | false) - enable/disable check_init feature
-  * CHECK_INIT_ACTION -- (exit | continue) -- What to do in case of failing checks
-  * CHECK_INIT_MAX_DELAY --  Maximum time to spend checking remote JVM
-  * CHECK_INIT_INTERVAL -- interval between attempts
+  * SERVICE_PORT -- Port to receive http /metrics requests from Prometheus.
+  * DEST_HOST -- Host to monitor via jmx.
+  * DEST_PORT -- JMX port of destination host.
+  * RULES_MODULE -- Rules to apply.
+  * JVM_LOCAL_OPTS -- Options for local jvm.
+  * JMX_LOCAL_PORT -- Port for local jmxremote.
+  * CHECK_INIT -- (true | false) - Enable/disable check_init feature.
+  * CHECK_INIT_ACTION -- (exit | continue) -- What to do in case of failing checks.
+  * CHECK_INIT_MAX_DELAY --  Maximum time to spend checking remote JVM.
+  * CHECK_INIT_INTERVAL -- Interval between attempts (in seconds).
 
 Supported modules in current version (only one can be selected):
   * default (this will translate all mbeans to metrics)
