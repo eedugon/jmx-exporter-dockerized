@@ -1,6 +1,8 @@
 # jmx-exporter in a Docker with extra features
 
-This project consists of a dockerised JMX Exporter image, based on the original project created by sscaling (sscaling/jmx_exporter), using alpine-java, dumb-init and fetching the official released version of jmx_exporter from the [maven central repository](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/)
+This project consists of a dockerised JMX Exporter image, based on the original project created by sscaling (sscaling/docker-jmx-prometheus-exporter), using alpine-java, dumb-init and fetching the official released version of jmx_exporter from the [maven central repository](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/)
+
+The version of the official prometheus jmx-exporter currently built and supported is 0.9 (and the http version, not used as java agent).
 
 This version of the docker includes the following extra features:
 
