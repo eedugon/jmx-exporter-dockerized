@@ -26,6 +26,12 @@ Supported modules in current version (only one can be selected):
   * default (this will translate all mbeans to metrics)
   * kafka-0-2-8
 
+The objectives of implementing these features are:
+
+  * Being able to use the same docker image of jmx_exporter for different scenarios, as the configuration can be built from environment variables
+  * In a Kubernetes environment, run jmx_exporter docker as an extra container (sidecar) in the pod to monitor (in this case DEST_HOST should be localhost)
+  * In a Kubernetes environment, run jmx_exporter docker in a dedicated pod, in order to monitor another pod (in this case DEST_HOST should be the name of a k8s service pointing to the pod).
+
 ## Default Settings
 
 If no environment variables or volumes are provided to the image, the exporter will have the following default behavior:
