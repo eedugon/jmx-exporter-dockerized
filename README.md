@@ -6,10 +6,10 @@ This version of the docker includes the following extra features:
 
   * Automatic Configuration: config.xml creation based on environment variables and templates.
   * Static Configuration: if config.xml is mapped into /opt/jmx_exporter/config/, then environment variables won't be considered, and the provided configuration used.
-  * Flexible rules: via environment variable we can select the rules to apply to the configuration (only if Automatic Configuration feature is used and only 1 rules file allowed)
-  * check_init : With check init enabled (by default is disabled), jmx_exporter will wait until the remote jmx port is available (this feature uses nagios check_jmx plugin)
+  * Flexible rules: via environment variable we can select the rules to apply to the configuration (only if Automatic Configuration feature is used and only 1 rules file allowed).
+  * check_init : With check init enabled (by default is disabled), jmx_exporter will wait until the remote jmx port is available (this feature uses nagios check_jmx plugin).
 
-Environment variables supported to get different behavior/configuration
+Environment variables supported to get different behavior/configuration:
 
   * SERVICE_PORT -- port to receive http /metrics requests
   * DEST_HOST -- host to monitor via jmx
