@@ -4,7 +4,7 @@ This project consists of a dockerised JMX Exporter image, based on the original 
 
 This version of the docker includes the following extra features:
 
-  * Automatic Configuration: config.xml creation based on environment variables and templates
+  * Automatic Configuration: config.xml creation based on environment variables and templates.
   * Static Configuration: if config.xml is mapped into /opt/jmx_exporter/config/, then environment variables won't be considered, and the provided configuration used.
   * Flexible rules: via environment variable we can select the rules to apply to the configuration (only if Automatic Configuration feature is used and only 1 rules file allowed)
   * check_init : With check init enabled (by default is disabled), jmx_exporter will wait until the remote jmx port is available (this feature uses nagios check_jmx plugin)
@@ -28,8 +28,8 @@ Supported modules in current version (only one can be selected):
 
 The objectives of implementing these features are:
 
-  * Being able to use the same docker image of jmx_exporter for different scenarios, as the configuration can be built from environment variables
-  * In a Kubernetes environment, run jmx_exporter docker as an extra container (sidecar) in the pod to monitor (in this case DEST_HOST should be localhost)
+  * Being able to use the same docker image of jmx_exporter for different scenarios, as the configuration can be built from environment variables.
+  * In a Kubernetes environment, run jmx_exporter docker as an extra container (sidecar) in the pod to monitor (in this case DEST_HOST should be localhost).
   * In a Kubernetes environment, run jmx_exporter docker in a dedicated pod, in order to monitor another pod (in this case DEST_HOST should be the name of a k8s service pointing to the pod).
 
 ## Default Settings
@@ -81,5 +81,5 @@ Additionally, the following environment variables can be defined
 ## CHECK_INIT considerations
 
 I still need to check if we can use nagios check_jmx plugin inside this project. Anyway, it can be removed from the code easily:
-  * Remove from start.sh the block of CHECK_INIT feature plus all CHEC_INIT variables definition
+  * Remove from start.sh the block of CHECK_INIT feature plus all CHECK_INIT variables definition.
   * Remove from Dockerfile the copy of resources/check_jmx to the docker.
