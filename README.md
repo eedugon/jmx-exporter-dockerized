@@ -1,8 +1,8 @@
-# JMX_EXPORTER with extra features
+# jmx-exporter in a Docker with extra features
 
-This project consists of a dockerised JMX Exporter image, based on the original image created by sscaling (sscaling/jmx_exporter), using alpine-java, dumb-init and fetching the official released version of jmx_exporter from the [maven central repository](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/)
+This project consists of a dockerised JMX Exporter image, based on the original project created by sscaling (sscaling/jmx_exporter), using alpine-java, dumb-init and fetching the official released version of jmx_exporter from the [maven central repository](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver/)
 
-This image includes the following extra features:
+This version of the docker includes the following extra features:
 
   * Automatic Configuration: config.xml creation based on environment variables and templates
   * Static Configuration: if config.xml is mapped into /opt/jmx_exporter/config/, then environment variables won't be considered, and the provided configuration used.
